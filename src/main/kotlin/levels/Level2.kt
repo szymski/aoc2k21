@@ -9,18 +9,41 @@ class Level2 : Level {
             .map { it.split(" ") }
             .map { Command(it[0], it[1].toInt()) }
 
-        val pos = object {
-            var horizontal = 0;
-            var depth = 0;
-        }
-
         part(1) {
+            val pos = object {
+                var horizontal = 0;
+                var depth = 0;
+            }
+
             commands.forEach { command ->
                 with(command) {
                     when (type) {
                         "forward" -> pos.horizontal += value
                         "up" -> pos.depth -= value
                         "down" -> pos.depth += value
+                    }
+                }
+            }
+
+            pos.horizontal * pos.depth
+        }
+
+        part(2) {
+            val pos = object {
+                var horizontal = 0;
+                var depth = 0;
+                var aim = 0;
+            }
+
+            commands.forEach { command ->
+                with(command) {
+                    when (type) {
+                        "forward" -> {
+                            pos.horizontal += value;
+                            pos.depth += pos.aim * value;
+                        }
+                        "up" -> pos.aim -= value
+                        "down" -> pos.aim += value
                     }
                 }
             }

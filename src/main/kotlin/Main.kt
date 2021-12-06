@@ -24,7 +24,7 @@ private fun loadInputFile(level: Level, levelName: String): String {
 }
 
 fun newLevelInstance(name: String): Level {
-    val className = name.replaceFirstChar { it.toUpperCase() }
+    val className = name.replaceFirstChar { it.uppercase() }
     val levelClass = Class.forName("levels.$className") ?: throw IllegalStateException("Class not found '$className'")
     val instance = levelClass.getDeclaredConstructor().newInstance()
     return instance as Level

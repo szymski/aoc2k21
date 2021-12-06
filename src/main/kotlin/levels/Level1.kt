@@ -1,11 +1,20 @@
 package levels
 
 class Level1 : Level {
-    override val inputFilename = "input.txt"
+    override fun run(@Load("input.txt") input: String) {
+        val depths = input.split("\n").map(String::toInt)
 
-    override fun run(input: String) {
-        println("Running level 1")
-        println(input)
+        part(1) {
+            depths
+                .zipWithNext { a, b -> b > a }
+                .count { it }
+        }
+
+        part(2) {
+            depths
+                .windowed(3) { it.sum() }
+                .zipWithNext { a, b -> b > a }
+                .count { it }
+        }
     }
-
 }

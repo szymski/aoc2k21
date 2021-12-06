@@ -1,14 +1,26 @@
 import levels.Level
+import levels.Load
 import java.io.File
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 fun main(args: Array<String>) {
     val levelName = args.getOrNull(1) ?: System.getenv("LEVEL") ?: "level1"
     println("Processing $levelName")
 
     val level = newLevelInstance(levelName)
-    val inputPath = "input/$levelName/${level.inputFilename}"
-    val inputContent = File(inputPath).readText()
+    val inputContent = loadInputFile(level, levelName)
     level.run(inputContent)
+}
+
+private fun loadInputFile(level: Level, levelName: String): String {
+    val runMethod = level::class.members.find { it.name == Level::run.name }
+    val loadAnnotation = runMethod
+        ?.parameters?.first { it.hasAnnotation<Load>() }
+        ?.findAnnotation<Load>()
+        ?: throw IllegalStateException("No @Load annotation found in")
+    val inputPath = "input/$levelName/${loadAnnotation.filename}"
+    return File(inputPath).readText().trim()
 }
 
 fun newLevelInstance(name: String): Level {

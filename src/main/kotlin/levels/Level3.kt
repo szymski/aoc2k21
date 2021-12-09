@@ -1,6 +1,6 @@
 package levels
 
-open class Level3 : Level {
+class Level3 : Level {
     override fun run(@Load("input.txt") input: String) {
         val bits = input
             .split("\n")

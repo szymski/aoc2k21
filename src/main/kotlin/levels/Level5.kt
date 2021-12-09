@@ -1,5 +1,8 @@
 package levels
 
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+
 data class Vector(var x: Int, var y: Int) : Comparable<Vector> {
     override fun compareTo(other: Vector) = x.compareTo(other.x)
     operator fun rangeTo(other: Vector) = StraightVectorRange(this, other)
@@ -16,30 +19,53 @@ class Level5 : Level {
             .chunked(2) { Vector(it[0], it[1]) }
             .chunked(2) { it[0] to it[1] }
 
+        val points = hashMapOf<Vector, Int>()
+
         part(1) {
-            val points = hashMapOf<Vector, Int>()
+            commands
+                .filter { (start, end) -> isStraight(start, end) }
+                .flatMap { (start, end) -> (start..end) }
+                .groupingBy { it }
+                .eachCount()
+                .filter { it.value > 1 }
+                .count()
 
-            val toConsider = commands.filter { it.isStraight() }
+        }
 
-            toConsider.forEach { (from, to) ->
-                val range = from..to
-                range.forEach { point ->
-                    points[point] = points.getOrDefault(point, 0) + 1
+        part(2) {
+            commands
+                .flatMap { (start, end) ->
+                    if (isStraight(start, end))
+                        (start..end).asSequence()
+                    else
+                        pointsOfDiagonal(start, end)
                 }
-            }
-
-            points.values.count() { it > 1 }
+                .groupingBy { it }
+                .eachCount()
+                .filter { it.value > 1 }
+                .count()
         }
     }
 }
 
-fun Pair<Vector, Vector>.isStraight(): Boolean =
-    this.first.x == this.second.x || this.first.y == this.second.y
+fun pointsOfDiagonal(from: Vector, to: Vector): Sequence<Vector> {
+    val xFac = (to.x - from.x).sign
+    val yFac = (to.y - from.y).sign
+
+    val dist = (to.x - from.x).absoluteValue
+
+    return (0..dist)
+        .asSequence()
+        .map { Vector(from.x + it * xFac, from.y + it * yFac) }
+}
+
+
+fun isStraight(a: Vector, b: Vector): Boolean = a.x == b.x || a.y == b.y
 
 class StraightVectorRange(override val start: Vector, override val endInclusive: Vector) :
     ClosedRange<Vector>, Iterable<Vector> {
     init {
-        require((start to endInclusive).isStraight()) { "The vector range $start -> $endInclusive must create a straight line" }
+        require(isStraight(start, endInclusive)) { "The vector range $start -> $endInclusive must create a straight line" }
     }
 
     override fun iterator(): Iterator<Vector> {

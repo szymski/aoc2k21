@@ -5,7 +5,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 fun main(args: Array<String>) {
-    val levelName = args.getOrNull(1) ?: System.getenv("LEVEL") ?: "level3"
+    val levelName = args.getOrNull(1) ?: System.getenv("LEVEL") ?: "level4"
     println("Processing $levelName")
 
     val level = newLevelInstance(levelName)

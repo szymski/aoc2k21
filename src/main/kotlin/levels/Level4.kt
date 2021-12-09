@@ -39,20 +39,31 @@ class Level4 : Level {
             }
             .toTypedArray()
 
-        part(1) {
-            toDraw.forEach { number ->
-                boards.forEach { board ->
-                    val cells = board.flatten()
-                    cells.filter { it.number == number }
-                        .forEach { it.marked = true }
+        val winnerBoardIds = hashSetOf<Int>()
+        val winnerBoardScores = mutableListOf<Int>()
 
-                    if(board.hasWon()) {
-                        val unmarkedSum = cells.filter { !it.marked }
-                            .sumOf { it.number }
-                        return@part unmarkedSum * number
-                    }
+        toDraw.forEach { number ->
+            boards.forEachIndexed { boardIndex, board ->
+                val cells = board.flatten()
+                cells.filter { it.number == number }
+                    .forEach { it.marked = true }
+
+                if(!winnerBoardIds.contains(boardIndex) && board.hasWon()) {
+                    winnerBoardIds.add(boardIndex)
+                    val unmarkedSum = cells.filter { !it.marked }
+                        .sumOf { it.number }
+                    val score = unmarkedSum * number
+                    winnerBoardScores.add(score)
                 }
             }
+        }
+
+        part(1) {
+            winnerBoardScores.first()
+        }
+
+        part(1) {
+            winnerBoardScores.last()
         }
     }
 
